@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image as Base64</title>
+</head>
+<body>
+    <h1>Upload Image as Base64 in JSON</h1>
+
+    <form id="uploadForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="imageInput">Choose an image:</label>
+        <input type="file" id="imageInput" accept="image/*" required><br><br>
+
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        const form = document.getElementById("uploadForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();  // Prevent default form submission
+
+            const imageFile = document.getElementById("imageInput").files[0];
+            const name = document.getElementById("name").value;
+
+            const reader = new FileReader();
+            reader.readAsDataURL(imageFile);  // Convert image to base64
+            reader.onloadend = function () {
+                const base64Image = reader.result;  // Get base64 result
+
+                const data = {
+                    name: name,
+                    image: base64Image // Send base64 image in JSON
+                };
+
+                // Send the data to the server
+                fetch("http://localhost:3001/upload", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log("Success:", result);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+            };
+        });
+    </script>
+</body>
+</html>
